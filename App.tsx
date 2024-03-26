@@ -46,7 +46,7 @@ export default function App() {
     const googleApisUrl = "https://maps.googleapis.com/maps/api/place/textsearch/json";
     const input = "Psicologo";
     const locationS = `${location?.coords.latitude}, ${location?.coords.longitude}&radius=2000`;
-    const url = `${googleApisUrl}?query=${input}&location=${locationS}&key=AIzaSyBajmU9dXONFjV2TALolSfJlSetCSywIQs`;
+    const url = `${googleApisUrl}?query=${input}&location=${locationS}&key=APIKEY`;
     try{
       const resp = await fetch(url);
       const json = await resp.json();
