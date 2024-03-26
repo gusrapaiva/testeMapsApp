@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   requestForegroundPermissionsAsync,
   getCurrentPositionAsync,
   LocationObject,
+  LocationAccuracy,
+  watchPositionAsync,
 } from 'expo-location';
 
 export default function App() {
 
   const [location, setLocation] = useState<LocationObject | null>(null);
+
+  const mapRef = useRef<MapView>(null);
 
   async function requestLocationPermissions(){
     const { granted } = await requestForegroundPermissionsAsync();
@@ -21,9 +25,23 @@ export default function App() {
     }
   }
 
+
   useEffect(() => {
     requestLocationPermissions();
   }, []); 
+
+  useEffect(() => {
+    watchPositionAsync({
+      accuracy: LocationAccuracy.Highest,
+      timeInterval: 1000,
+      distanceInterval: 1
+    }, (response) => {
+      setLocation(response);
+      mapRef.current?.animateCamera({
+        center: response.coords
+      })
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -36,6 +54,7 @@ export default function App() {
             latitudeDelta: 0.005,
             longitudeDelta: 0.005
           }}
+          ref={mapRef}
         >
           <Marker 
             coordinate={{
@@ -55,7 +74,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   map: {
-    flex: 1,
     width: '100%',
     height: '100%',
   },
